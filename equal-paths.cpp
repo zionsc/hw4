@@ -12,29 +12,29 @@ using namespace std;
 // You may add any prototypes of helper functions here
 int heightFunc(Node* node)
 {
-    if (node == NULL) { // base case
-        return 0;
-    }
+    // if (node == NULL) { // base case
+    //     return 0;
+    // }
 
-    int num = 0;
-    int left = heightFunc(node->left);
-    int right = heightFunc(node->right);
+    // int num = 0;
+    // int left = heightFunc(node->left);
+    // int right = heightFunc(node->right);
 
-    if (left >= right) {
-        num = left;
-    }
-    else if (left <= right) {
-        num = right;
-    }
+    // if (left >= right) {
+    //     num = left;
+    // }
+    // else if (left <= right) {
+    //     num = right;
+    // }
     
-    ++num;
-    return num;
-  // if (node == NULL) {
-  //   return 0;
-  // }
-  // else {
-  //   return 1 + max(heightFunc(node->left), heightFunc(node->right));
-  // }
+    // ++num;
+    // return num;
+  if (node == NULL) {
+    return 0;
+  }
+  else {
+    return 1 + max(heightFunc(node->left), heightFunc(node->right));
+  }
 }
 
 bool equalPaths(Node * root)
