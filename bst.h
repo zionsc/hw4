@@ -251,7 +251,8 @@ protected:
     static Node<Key, Value>* successor(Node<Key, Value>* current); // TODO
     void clearHelperFunc(Node<Key, Value>* currNode); // TODO
     int getSmallestNodeHelperFunc(Node<Key, Value>* currNode); // TODO
-    int isBalancedHelperFunc(Node<Key, Value>* currNode); // TODO
+    bool isBalanced(Node<Key, Value>* currNode) const;
+    int isBalancedHelperFunc(Node<Key, Value>* currNode) const; // TODO
 
 
 protected:
@@ -685,26 +686,29 @@ bool BinarySearchTree<Key, Value>::isBalanced() const
 template<typename Key, typename Value>
 bool BinarySearchTree<Key, Value>::isBalanced(Node<Key, Value>* currNode) const 
 {
+  // Base Case
   if (node == NULL) {return true;}
 
   int left = isBalancedHelperFunc(currNode->getLeft());
   int right = isBalancedHelperFunc(currNode->getRight());
 
-  if ()
+  // Case 1:
+  if (abs(left-right) > 1) {return false;}
+
+  // Case 2: Recursive Case
+  else {return isBalanced(currNode->getLeft()) && isBalanced(currNode->getRight());}
 }
 
 template<typename Key, typename Value>
-int BinarySearchTree<Key, Value>::isBalancedHelperFunc(Node<Key, Value>* currNode)
+int BinarySearchTree<Key, Value>::isBalancedHelperFunc(Node<Key, Value>* currNode) const
 {
   // Base Case
   if (currNode == NULL) {
     return 0;
   }
-  else {
-    int left = isBalancedHelperFunc(currNode->getLeft());
-    int right = isBalancedHelperFunc(currNode->getRight());
-    return max(left, right) + 1;
-  }
+
+  // Case 1: Recursive Case
+  else {return 1 + max(isBalancedHelperFunc(currNode->getLeft()), isBalancedHelperFunc(currNode->getRight()));}
 }
 
 
