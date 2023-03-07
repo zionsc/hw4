@@ -250,9 +250,10 @@ protected:
     // Add helper functions here
     static Node<Key, Value>* successor(Node<Key, Value>* current); // TODO
     void clearHelperFunc(Node<Key, Value>* currNode); // TODO
-    // Node<Key, Value>* getSmallestNodeHelperFunc(Node<Key, Value>* currNode); // TODO
-    bool isBalanced(Node<Key, Value>* currNode) const;
-    int isBalancedHelperFunc(Node<Key, Value>* currNode) const; // TODO
+    Node<Key, Value>* getSmallestNodeHelperFunc(Node<Key, Value>* currNode) const; // TODO
+    int heightFunc(Node<Key, Value>* currNode) const; // TODO
+    // bool isBalanced(Node<Key, Value>* currNode) const;
+    // int isBalancedHelperFunc(Node<Key, Value>* currNode) const; // TODO
 
 
 protected:
@@ -466,25 +467,37 @@ void BinarySearchTree<Key, Value>::insert(const std::pair<const Key, Value> &key
 {
     // TODO
 
-  Node<Key, Value>* tempNode = root_;
+  Key currKey = keyValuePair.first;
+  Value currVal = keyValuePair.second;
+
   if (!(this->empty())) {
+    Node<Key, Value>* tempNode = root_;
     while (true) {
       Key tempKey = tempNode->getKey(); // .first value
-      if (keyValuePair.first == tempKey) {
-        tempNode->setValue(keyValuePair.second);
+      if (currKey == tempKey) {
+        tempNode->setValue(currVal);
         break;
       }
-      else if (keyValuePair.first < tempKey) {
+      else if (currKey < tempKey) {
+        // std::cout << keyValuePair.first << std::endl;
         if (tempNode->getLeft() == NULL) {
-          Node<Key, Value>* newNode = new Node<Key, Value>(keyValuePair.first, keyValuePair.second, tempNode);
+          // std::cout << keyValuePair.first << std::endl;
+          Node<Key, Value>* newNode = new Node<Key, Value>(currKey, currVal, tempNode);
           tempNode->setLeft(newNode);
+          // std::cout << keyValuePair.first << std::endl;
+          // std::cout << tempNode->getLeft()->getValue() << std::endl;
           break;
         }
+        // else if (tempNode->getLeft() != NULL) {
+        //   Node<Key, Value>* left = tempNode->getLeft();
+        //   left->setValue(keyValuePair.second);
+        //   break;
+        // }
         tempNode = tempNode->getLeft();
       }
-      else if (keyValuePair.first > tempKey) {
+      else if (currKey > tempKey) {
         if (tempNode->getRight() == NULL) {
-          Node<Key, Value>* newNode = new Node<Key, Value>(keyValuePair.first, keyValuePair.second, tempNode);
+          Node<Key, Value>* newNode = new Node<Key, Value>(currKey, currVal, tempNode);
           tempNode->setRight(newNode);
           break;
         }
@@ -493,7 +506,7 @@ void BinarySearchTree<Key, Value>::insert(const std::pair<const Key, Value> &key
     }
   }
   else if (this->empty()) {
-    Node<Key, Value>* newNode = new Node<Key, Value>(keyValuePair.first, keyValuePair.second, tempNode); // empty, newNode = root
+    Node<Key, Value>* newNode = new Node<Key, Value>(currKey, currVal, NULL); // empty, newNode = root
     root_ = newNode;
   }
 }
@@ -509,8 +522,223 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
 {
     // TODO
 
-  
+/*
 
+    if (root_ == NULL) {
+      return;
+    }
+
+    else {
+      Node<Key, Value>* currNode = root_;
+      while (currNode != NULL) {
+        Node<Key, Value>* currNodeParent = currNode->getParent();
+        Node<Key, Value>* currNodeLeftChild = currNode->getLeft();
+        Node<Key, Value>* currNodeRightChild = currNode->getRight();
+        Node<Key, Value>* pred = predecessor(currNode);
+        Key currNodeKey = currNode->getKey();
+        if (currNodeKey == key) {
+          // std::cout << root_->getValue() << std::endl;
+          if (currNode->getLeft() == NULL && currNode->getRight() == NULL) {
+            // std::cout << root_->getValue() << std::endl;
+            if (currNode == root_) {
+              // std::cout << root_->getValue() << std::endl;
+              delete root_;
+              root_ = NULL;
+              // std::cout << root_->getValue() << std::endl;
+              break;
+              // std::cout << root_->getValue() << std::endl;
+            }
+            else if (currNodeParent->getRight() == currNode) {
+              currNodeParent->setRight(NULL);
+              currNode->setParent(NULL);
+              delete currNode;
+              break;
+            }
+            else if (currNodeParent->getLeft() == currNode) {
+              currNodeParent->setLeft(NULL);
+              currNode->setParent(NULL);
+              delete currNode;
+              break;
+            }
+          }
+          else if (currNode->getLeft() == NULL || currNode->getRight() == NULL) {
+            if (currNode->getLeft() == NULL) {
+              if (currNodeParent == NULL) {
+                root_ = currNodeRightChild;
+                currNodeRightChild->setParent(NULL);
+                currNode->setParent(NULL);
+                currNode->setRight(NULL);
+                break;
+              }
+              if (currNode == currNodeParent->getRight()) { // current's right child, delete curr
+                currNodeParent->setRight(currNodeRightChild);
+                currNodeRightChild->setParent(currNodeParent);
+              }
+              else { // current's left child, delete curr
+                currNodeParent->setLeft(currNodeRightChild);
+                currNodeRightChild->setParent(currNodeParent);
+              }
+              currNode->setParent(NULL);
+              currNode->setRight(NULL);
+            }
+            else if (currNode->getRight() == NULL) {
+              if (currNodeParent == NULL) { // if is root
+                root_ = currNodeLeftChild;
+                currNodeLeftChild->setParent(NULL);
+                currNode->setParent(NULL);
+                currNode->setLeft(NULL);
+                break;
+              }
+              if (currNode == currNodeParent->getRight()) { // last right child
+                currNodeParent->setRight(currNodeLeftChild);
+                currNodeLeftChild->setParent(currNodeParent);
+              }
+              else { // last left child
+                currNodeParent->setLeft(currNodeLeftChild);
+                currNodeLeftChild->setParent(currNodeParent);
+              }
+              delete currNode;
+              break;
+            }
+          }
+          else { // node has both children
+            nodeSwap(currNode, pred);
+
+            // recursive call to delete the swapped currNode
+            remove(currNode->getKey()); 
+          }
+        }
+        else if (currNodeKey > key) {
+          // // May not be necessary
+          // if (currNode->getLeft() == NULL) {
+          //   break;
+          // }
+          currNode = currNode->getLeft();
+        }
+        else if (currNodeKey < key) {
+          // May not be necessary
+          // if (currNode->getRight() == NULL) {
+          //   break;
+          // }
+          currNode = currNode->getRight();
+        }
+        // No Key within BST
+        else {
+          break;
+        }
+      }
+      // std::cout << "hello" << std::endl;
+      // std::cout << root_->getValue() << std::endl;
+  }
+
+  */
+
+  // second attempt
+
+  if (root_ != NULL) {
+    Node<Key, Value>* currNode = root_;
+    while (true) {
+      Key currNodeKey = currNode->getKey();
+
+      // Key found (at Node)
+      if (currNodeKey == key) { 
+        if (currNode->getLeft() == NULL && currNode->getRight() == NULL) {
+          if (currNode == root_) {
+            root_ = NULL;
+            delete root_;
+            break;
+          }
+          Node<Key, Value>* currNodeParent = currNode->getParent();
+          if (currNodeParent->getRight() == currNode) {
+            currNodeParent->setRight(NULL);
+          }
+          else if (currNodeParent->getLeft() == currNode) {
+            currNodeParent->setLeft(NULL);
+          }
+          currNode->setParent(NULL);
+          delete currNode;
+          break;
+        }
+        else if (currNode->getLeft() == NULL || currNode->getRight() == NULL) {
+          // Right Subtree Exists
+          if (currNode->getLeft() == NULL) {
+            Node<Key, Value>* currNodeRightChild = currNode->getRight();
+            if (currNode->getParent() == NULL) {
+              root_ = currNodeRightChild;
+              currNodeRightChild->setParent(NULL);
+              currNode->setParent(NULL);
+              currNode->setRight(NULL);
+              break;
+            }
+            Node<Key, Value>* currNodeParent = currNode->getParent();
+            if (currNode == currNodeParent->getRight()) {
+              currNodeParent->setRight(currNodeRightChild);
+              currNodeRightChild->setParent(currNodeParent);
+            }
+            else {
+              currNodeParent->setLeft(currNodeRightChild);
+              currNodeRightChild->setParent(currNodeParent);
+            }
+            currNode->setParent(NULL);
+            currNode->setRight(NULL);
+          }
+          // Left Subtree Exists
+          else if (currNode->getRight() == NULL) {
+            Node<Key, Value>* currNodeLeftChild = currNode->getLeft();
+            if (currNode->getParent() == NULL) {
+              root_ = currNodeLeftChild;
+              currNodeLeftChild->setParent(NULL);
+              currNode->setParent(NULL);
+              currNode->setLeft(NULL);
+              break;
+            }
+            Node<Key, Value>* currNodeParent = currNode->getParent();
+            if (currNode == currNodeParent->getRight()) {
+              currNodeParent->setRight(currNodeLeftChild);
+              currNodeLeftChild->setParent(currNodeParent);
+            }
+            else {
+              currNodeParent->setLeft(currNodeLeftChild);
+              currNodeLeftChild->setParent(currNodeParent);
+            }
+            currNode->setParent(NULL);
+            currNode->setLeft(NULL);
+          }
+          delete currNode;
+          break;
+        }
+        // Both Children
+        else {
+          Node<Key, Value>* pred = predecessor(currNode);
+          nodeSwap(currNode, pred);
+
+          // recursive step once again to find until base case
+          remove(currNode->getKey());
+        }
+      }
+
+      // key is less than (Left)
+      else if (currNodeKey > key) { 
+        if (currNode->getLeft() == NULL) {
+          break;
+        }
+        currNode = currNode->getLeft();
+      }
+
+      // key is greater than (Right)
+      else if (currNodeKey < key) { 
+        if (currNode->getRight() == NULL) {
+          break;
+        }
+        currNode = currNode->getRight();
+      }
+
+      // no key found
+      else { 
+        break;
+      }
+    }
+  }
 }
 
 
@@ -547,6 +775,7 @@ BinarySearchTree<Key, Value>::predecessor(Node<Key, Value>* current)
       }
     }
   }
+  return NULL;
 }
 
 template<class Key, class Value>
@@ -584,7 +813,7 @@ BinarySearchTree<Key, Value>::successor(Node<Key, Value>* current)
       }
       // current is parent's left
       else if (parentNode->getLeft() == current) {
-        return current;
+        return parentNode;
       }
     }
   }
@@ -627,32 +856,32 @@ BinarySearchTree<Key, Value>::getSmallestNode() const
 {
     // TODO -> LEFT-MOST Node
     Node<Key, Value>* currNode = root_;
-    // return getSmallestNodeHelperFunc(this->root_);
-	  while (true) {
-		  if (currNode->getLeft() != NULL) {
-			  currNode = currNode->getLeft();
-			  continue;
-		  }
-		  else {
-			  break;
-		  }
-	  }
-	  return currNode;
+    return getSmallestNodeHelperFunc(currNode);
+	  // while (true) {
+		//   if (currNode->getLeft() != NULL) {
+		// 	  currNode = currNode->getLeft();
+		// 	  continue;
+		//   }
+		//   else {
+		// 	  break;
+		//   }
+	  // }
+	  // return currNode;
 }
 
-// template<typename Key, typename Value>
-// Node<Key, Value>* 
-// BinarySearchTree<Key, Value>::getSmallestNodeHelperFunc(Node<Key, Value>* currNode) 
-// {
-//   // Base Case
-//   if (currNode == NULL || currNode->getLeft() == NULL) {
-//     return currNode;
-//   }
-//   // Recursive Case 1:
-//   else {
-//     return getSmallestNodeHelperFunc(currNode->getLeft());
-//   }
-// }
+template<typename Key, typename Value>
+Node<Key, Value>* 
+BinarySearchTree<Key, Value>::getSmallestNodeHelperFunc(Node<Key, Value>* currNode) const
+{
+  // Base Case
+  if (currNode == NULL || currNode->getLeft() == NULL) {
+    return currNode;
+  }
+  // Recursive Case 1:
+  else {
+    return getSmallestNodeHelperFunc(currNode->getLeft());
+  }
+}
 
 /**
 * Helper function to find a node with given key, k and
@@ -669,7 +898,7 @@ Node<Key, Value>* BinarySearchTree<Key, Value>::internalFind(const Key& key) con
   }
   else {
     Node<Key, Value>* currNode = root_;
-    while (true) {
+    while (currNode != NULL) {
       if (key < currNode->getKey()) {
         currNode = currNode->getLeft();
         continue;
@@ -683,6 +912,7 @@ Node<Key, Value>* BinarySearchTree<Key, Value>::internalFind(const Key& key) con
       }
     }
   }
+  return NULL;
 }
 
 /**
@@ -692,36 +922,88 @@ template<typename Key, typename Value>
 bool BinarySearchTree<Key, Value>::isBalanced() const
 {
     // TODO
-  return isBalanced(root_);
+  //return isBalanced(root_);
+  return heightFunc(root_) != -1;
+
 }
 
 template<typename Key, typename Value>
-bool BinarySearchTree<Key, Value>::isBalanced(Node<Key, Value>* currNode) const 
+int BinarySearchTree<Key, Value>::heightFunc(Node<Key, Value>* currNode) const
 {
-  // Base Case
-  if (currNode == NULL) {return true;}
+  // int currNodeLeftChild = 0, currNodeRightChild = 0, focusChild;
 
-  int left = isBalancedHelperFunc(currNode->getLeft());
-  int right = isBalancedHelperFunc(currNode->getRight());
-
-  // Case 1:
-  if (abs(left-right) > 1) {return false;}
-
-  // Case 2: Recursive Case
-  else {return isBalanced(currNode->getLeft()) && isBalanced(currNode->getRight());}
-}
-
-template<typename Key, typename Value>
-int BinarySearchTree<Key, Value>::isBalancedHelperFunc(Node<Key, Value>* currNode) const
-{
-  // Base Case
   if (currNode == NULL) {
     return 0;
   }
 
-  // Case 1: Recursive Case
-  else {return 1 + max(isBalancedHelperFunc(currNode->getLeft()), isBalancedHelperFunc(currNode->getRight()));}
+  int left = heightFunc(currNode->getLeft());
+  if (left == -1) {
+    return -1;
+  }
+  
+  int right = heightFunc(currNode->getRight());
+  if (right == -1) {
+    return -1;
+  }
+
+  if (std::abs(left-right) > 1) {
+    return -1;
+  }
+  
+  return std::max(left, right) + 1;
+
+  // currNodeLeftChild = heightFunc(currNode->getLeft());
+  // currNodeRightChild = heightFunc(currNode->getRight());
+
+  // if (currNodeLeftChild == -1 || currNodeRightChild == -1 ) return -1;
+  // else if (abs(currNodeLeftChild-currNodeRightChild) > 1) return -1;
+  // else {
+  //   if (currNodeLeftChild >= currNodeRightChild) {
+  //     focusChild = currNodeLeftChild;
+  //   }
+  //   else {
+  //     focusChild = currNodeRightChild;
+  //   }
+  // }
+  
+  // ++focusChild;
+  // return focusChild;
 }
+
+// template<typename Key, typename Value>
+// bool BinarySearchTree<Key, Value>::isBalanced(Node<Key, Value>* currNode) const 
+// {
+//     if (currNode == NULL) { // base case
+//         return true;
+//     }
+//     else if (currNode->getLeft() != NULL && currNode->getRight() == NULL) { // left child
+//         return isBalanced(currNode->getLeft());
+//     }
+//     else if (currNode->getLeft() == NULL && currNode->getRight() != NULL) { // right child
+//         return isBalanced(currNode->getRight());
+//     }
+
+//     else { // both child
+//         int left = isBalancedHelperFunc(currNode->getLeft());
+//         int right = isBalancedHelperFunc(currNode->getRight());
+//         if (left != right) {
+//             return false;
+//         }
+//     }
+//     return true;
+// }
+
+// template<typename Key, typename Value>
+// int BinarySearchTree<Key, Value>::isBalancedHelperFunc(Node<Key, Value>* currNode) const
+// {
+//   if (currNode == NULL) {
+//     return 0;
+//   }
+//   else {
+//     return 1 + std::max(isBalancedHelperFunc(currNode->getLeft()), isBalancedHelperFunc(currNode->getRight()));
+//   }
+  
+// }
 
 
 
