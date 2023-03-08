@@ -367,6 +367,8 @@ void AVLTree<Key, Value>::removeHelperFunc(AVLNode<Key, Value>* currNode, int8_t
 	if (currNode == NULL) {
 		return;
 	}
+
+
 	AVLNode<Key, Value>* parent = currNode->getParent();
 	int8_t nextval;
 	if (parent != NULL) { 
@@ -380,31 +382,39 @@ void AVLTree<Key, Value>::removeHelperFunc(AVLNode<Key, Value>* currNode, int8_t
 
 	int8_t currbal = currNode->getBalance();
 	int8_t currbal2 = currbal + val;
+
 	if (currbal2 == -2 || currbal2 == 2) { 
 		if (currbal2 == -2) { 
 			AVLNode<Key, Value>* currleft = currNode->getLeft();
 			int8_t currleftbal = currleft->getBalance();
+
 			if (currleftbal == -1) { 
 				RR(currNode);
 				currNode->setBalance(0);
 				currleft->setBalance(0);
 				removeHelperFunc(parent , nextval);
 			}
-			else if (currleftbal == 0) { //if no children
+
+			else if (currleftbal == 0) {
 				RR(currNode);
 				currNode->setBalance(-1);
 				currleft->setBalance(1);
 			}
-			else if ( currleftbal == 1 ) { //if left child has another child
+
+			else if ( currleftbal == 1 ) {
 				AVLNode<Key, Value>* currleftright = currleft->getRight();
 				RL(currleft);
 				RR(currNode);
+
 				int8_t currleftrightbal = currleftright->getBalance();
+
+
 				if (currleftrightbal == 1) {
 					currNode->setBalance(0);
 					currleft->setBalance(-1);
 					currleftright->setBalance(0);
 				}
+
 				else if (currleftrightbal == 0) {
 					currNode->setBalance(0);
 					currleft->setBalance(0);
@@ -415,48 +425,64 @@ void AVLTree<Key, Value>::removeHelperFunc(AVLNode<Key, Value>* currNode, int8_t
 					currleft->setBalance(0);
 					currleftright->setBalance(0);		
 				}
-				removeHelperFunc(parent, nextval); //call removefix again to update parents balance
+
+				removeHelperFunc(parent, nextval);
+
 			}
 			
 		}
+
+
+
+
 		else { 
 			AVLNode<Key, Value>* currright = currNode->getRight();
 			int8_t currrightbal = currright->getBalance();
+
 			if (currrightbal == 1) {
 				RL(currNode);
 				currNode->setBalance(0);
 				currright->setBalance(0);
 				removeHelperFunc(parent , nextval);
 			}
+
 			else if (currrightbal == 0) {
 				RL(currNode);
 				currNode->setBalance(1);
 				currright->setBalance(-1);
 			}
+
 			else if (currrightbal == -1) {
 				AVLNode<Key, Value>* currrightleft = currright->getLeft();
 				RR(currright);
 				RL(currNode);
 				int8_t currrightleftbal = currrightleft->getBalance();
+
 				if (currrightleftbal == -1) {
 					currNode->setBalance(0);
 					currright->setBalance(1);
 					currrightleft->setBalance(0);
 				}
+
 				else if (currrightleftbal == 0) {
 					currNode->setBalance(0);
 					currright->setBalance(0);
 					currrightleft->setBalance(0);
+
 				}
+
 				else if (currrightleftbal == 1) {
 					currNode->setBalance(-1);
 					currright->setBalance(0);
 					currrightleft->setBalance(0);		
 				}
+
 				removeHelperFunc(parent, nextval);
+
 			}
 			
 		}
+    
 	}
 	else if (currbal2 == -1 || currbal2 == 1) {
 		if (currbal2 == -1) {
@@ -467,12 +493,17 @@ void AVLTree<Key, Value>::removeHelperFunc(AVLNode<Key, Value>* currNode, int8_t
 			currNode->setBalance(1);
 			return;
 		}
+
 	}
+
 	else if (currbal2 == 0) {
 		
-		removeHelperFunc(parent , nextval); //recursive call up the tree
+		removeHelperFunc(parent , nextval); 
 		currNode->updateBalance(val);
 		
+
+
+
 	}
 }
 
