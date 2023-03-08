@@ -644,8 +644,9 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
       if (currNodeKey == key) { 
         if (currNode->getLeft() == NULL && currNode->getRight() == NULL) {
           if (currNode == root_) {
-            root_ = NULL;
+            // root_ = NULL;
             delete root_;
+            root_ = NULL;
             break;
           }
           Node<Key, Value>* currNodeParent = currNode->getParent();
@@ -662,12 +663,13 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
         else if (currNode->getLeft() == NULL || currNode->getRight() == NULL) {
           // Right Subtree Exists
           if (currNode->getLeft() == NULL) {
-            Node<Key, Value>* currNodeRightChild = currNode->getRight();
-            if (currNode->getParent() == NULL) {
+            Node<Key, Value>* currNodeRightChild = currNode->getRight(); // 2
+            if (currNode->getParent() == NULL) { // we the root
               root_ = currNodeRightChild;
               currNodeRightChild->setParent(NULL);
-              currNode->setParent(NULL);
+              // currNode->setParent(NULL);
               currNode->setRight(NULL);
+              delete currNode;
               break;
             }
             Node<Key, Value>* currNodeParent = currNode->getParent();
@@ -690,6 +692,7 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
               currNodeLeftChild->setParent(NULL);
               currNode->setParent(NULL);
               currNode->setLeft(NULL);
+              delete currNode; // hello
               break;
             }
             Node<Key, Value>* currNodeParent = currNode->getParent();
@@ -839,6 +842,7 @@ void BinarySearchTree<Key, Value>::clearHelperFunc(Node<Key, Value>* currNode)
   if (currNode == NULL) {
     return;
   }
+
   else {
     clearHelperFunc(currNode->getLeft());
     clearHelperFunc(currNode->getRight());

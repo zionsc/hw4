@@ -524,8 +524,8 @@ void AVLTree<Key, Value>:: remove(const Key& key)
         if (currRoot->getLeft() == NULL && currRoot->getRight() == NULL) {
           if (currRoot == this->root_) {
             currRoot->setBalance(0);
-            this->root_ = NULL;
             delete this->root_;
+            this->root_ = NULL;
             break;
           }
           AVLNode<Key, Value> *parent = currRoot->getParent();
@@ -542,7 +542,7 @@ void AVLTree<Key, Value>:: remove(const Key& key)
           break;
         }
         else if (currRoot->getLeft() == NULL || currRoot->getRight() == NULL) {
-          if (currRoot->getLeft() == NULL) {
+          if (currRoot->getLeft() == NULL) { // right exists
             AVLNode<Key, Value>* right = currRoot->getRight();
             if (currRoot->getParent() == NULL) {
               currRoot->setBalance(0);
@@ -550,6 +550,7 @@ void AVLTree<Key, Value>:: remove(const Key& key)
               right->setParent(NULL);
               currRoot->setParent(NULL);
               currRoot->setRight(NULL);
+              delete currRoot;
               break;
             }
             AVLNode<Key, Value>* parent = currRoot->getParent();
@@ -575,6 +576,7 @@ void AVLTree<Key, Value>:: remove(const Key& key)
               left->setParent(NULL);
               currRoot->setParent(NULL);
               currRoot->setLeft(NULL);
+              delete currRoot;
               break;
             }
             AVLNode<Key, Value>* parent = currRoot->getParent();
